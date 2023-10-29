@@ -24,8 +24,10 @@ class Search extends Component<SearchProps, SearchState> {
     const pokemonData = await this.getPokemonData('');
 
     const pokemonDataArray = await this.getListOfPokemons(pokemonData);
-    pokemonDataArray.forEach((pokemonData: PokemonData) => {
-      this.savePokemons(pokemonData);
+    pokemonDataArray.forEach((pokemonData: PokemonData | undefined) => {
+      if (pokemonData) {
+        this.savePokemons(pokemonData);
+      }
     });
 
     this.setState((prevState) => {
@@ -60,8 +62,10 @@ class Search extends Component<SearchProps, SearchState> {
     const pokemonData = await this.getPokemonData(this.state.searchTerm);
     if (this.state.searchTerm === '') {
       const pokemonDataArray = await this.getListOfPokemons(pokemonData);
-      pokemonDataArray.forEach((pokemonData: PokemonData) => {
-        this.savePokemons(pokemonData);
+      pokemonDataArray.forEach((pokemonData: PokemonData | undefined) => {
+        if (pokemonData) {
+          this.savePokemons(pokemonData);
+        }
       });
       this.setState((prevState) => {
         prevState.pokemons.length = 20;
@@ -93,8 +97,8 @@ class Search extends Component<SearchProps, SearchState> {
   createPokemonObject = (pokemonData: PokemonData): Pokemon => {
     const pokemonName: string = pokemonData.name ?? '';
     const pokemonAbilities: string[] =
-      pokemonData.abilities?.map(
-        (ability: PokemonAbility) => ability.ability.name
+      (pokemonData.abilities as PokemonAbility[])?.map(
+        (ability) => ability.ability.name
       ) ?? [];
     const pokemonSprite = pokemonData.sprites.front_default;
     const pokemon: Pokemon = {
