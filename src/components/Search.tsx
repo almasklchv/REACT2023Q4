@@ -22,19 +22,32 @@ class Search extends Component<SearchProps, SearchState> {
   }
 
   async componentDidMount() {
-    const pokemonData = await this.getPokemonData('');
+    console.log(this.state.searchTerm);
+    if (this.state.searchTerm) {
+      const pokemonData = await this.getPokemonData(this.state.searchTerm);
+      this.savePokemons(pokemonData);
 
-    const pokemonDataArray = await this.getListOfPokemons(pokemonData);
-    pokemonDataArray.forEach((pokemonData: PokemonData | undefined) => {
-      if (pokemonData) {
-        this.savePokemons(pokemonData);
-      }
-    });
+      this.setState((prevState) => {
+        prevState.pokemons.length = 1;
+        return prevState;
+      });
+    } else {
+      const pokemonData = await this.getPokemonData(
+        this.state.searchTerm ?? ''
+      );
 
-    this.setState((prevState) => {
-      prevState.pokemons.length = 20;
-      return prevState;
-    });
+      const pokemonDataArray = await this.getListOfPokemons(pokemonData);
+      pokemonDataArray.forEach((pokemonData: PokemonData | undefined) => {
+        if (pokemonData) {
+          this.savePokemons(pokemonData);
+        }
+      });
+
+      this.setState((prevState) => {
+        prevState.pokemons.length = 20;
+        return prevState;
+      });
+    }
   }
 
   getListOfPokemons = async (pokemonData: PokemonData) => {
