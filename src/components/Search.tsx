@@ -4,6 +4,7 @@ import { Pokemon, PokemonAbility, PokemonData } from '../interfaces/pokemon';
 
 interface SearchProps {
   getPokemons: (pokemons: Pokemon[]) => void;
+  startLoader: () => void;
 }
 
 interface SearchState {
@@ -58,7 +59,7 @@ class Search extends Component<SearchProps, SearchState> {
   handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     this.resetPokemons();
-
+    this.props.startLoader();
     const pokemonData = await this.getPokemonData(this.state.searchTerm);
     if (this.state.searchTerm === '') {
       const pokemonDataArray = await this.getListOfPokemons(pokemonData);

@@ -18,6 +18,13 @@ class App extends Component {
     }));
   };
 
+  startLoader = () => {
+    this.setState((prevState) => ({
+      ...prevState,
+      loading: true,
+    }));
+  };
+
   renderPokemonCards = (pokemons: Pokemon[]) => {
     return pokemons.map((pokemon) => (
       <PokemonCard key={pokemon.name} {...pokemon} />
@@ -28,7 +35,7 @@ class App extends Component {
     return (
       <div className="container">
         <img className="logo" src="/icons/logo.svg" />
-        <Search getPokemons={this.getPokemons} />
+        <Search startLoader={this.startLoader} getPokemons={this.getPokemons} />
         {this.state.loading ? (
           <Loader />
         ) : (
