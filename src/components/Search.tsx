@@ -1,57 +1,49 @@
-import { ChangeEvent, Component, FormEvent } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import styles from '../styles/Search.module.scss';
 import { Pokemon, PokemonAbility, PokemonData } from '../interfaces/pokemon';
 
 interface SearchProps {
-  getPokemons: (pokemons: Pokemon[]) => void;
+  getPokemons: (pokemons: Pokemon[], realLength: number) => void;
   startLoader: () => void;
 }
 
-interface SearchState {
-  searchTerm: string;
-  pokemons: Pokemon[];
-}
+const Search = (props: SearchProps) => {
+  const [searchTerm, setSearchTerm] = useState(
+    localStorage.getItem('searchTerm') ?? ''
+  );
+  const [pokemons, setPokemons] = useState([] as Pokemon[]);
+  const [realLength, setRealLength] = useState(
+    localStorage.getItem('searchTerm') ? 1 : 0
+  );
 
-class Search extends Component<SearchProps, SearchState> {
-  constructor(props: SearchProps) {
-    super(props);
-    this.state = {
-      searchTerm: localStorage.getItem('searchTerm') ?? '',
-      pokemons: [],
-    };
-  }
+  useEffect(() => {
+    async function fetchData() {
+      if (searchTerm) {
+        const pokemonData = await getPokemonData(searchTerm ?? '');
+        savePokemons(pokemonData);
+      } else {
+        const pokemonData = await getPokemonData(searchTerm ?? '');
 
-  async componentDidMount() {
-    console.log(this.state.searchTerm);
-    if (this.state.searchTerm) {
-      const pokemonData = await this.getPokemonData(this.state.searchTerm);
-      this.savePokemons(pokemonData);
-
-      this.setState((prevState) => {
-        prevState.pokemons.length = 1;
-        return prevState;
-      });
-    } else {
-      const pokemonData = await this.getPokemonData(
-        this.state.searchTerm ?? ''
-      );
-
-      const pokemonDataArray = await this.getListOfPokemons(pokemonData);
-      pokemonDataArray.forEach((pokemonData: PokemonData | undefined) => {
-        if (pokemonData) {
-          this.savePokemons(pokemonData);
-        }
-      });
-
-      this.setState((prevState) => {
-        prevState.pokemons.length = 20;
-        return prevState;
-      });
+        const pokemonDataArray = await getListOfPokemons(pokemonData);
+        pokemonDataArray.forEach((pokemonData) => {
+          if (pokemonData) {
+            savePokemons(pokemonData);
+          }
+        });
+      }
     }
-  }
 
-  getListOfPokemons = async (pokemonData: PokemonData) => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    props.startLoader();
+    props.getPokemons(pokemons, realLength);
+  }, [pokemons]);
+
+  async function getListOfPokemons(pokemonData: PokemonData) {
     const results = pokemonData.results;
+    setRealLength(results.length);
     const pokemonPromises = results.map(
       async (pokemon: { name: string; url: string }) => {
         try {
@@ -67,30 +59,28 @@ class Search extends Component<SearchProps, SearchState> {
     );
     const pokemonDataArray = await Promise.all(pokemonPromises);
     return pokemonDataArray;
-  };
+  }
 
-  handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    this.resetPokemons();
-    this.props.startLoader();
-    const pokemonData = await this.getPokemonData(this.state.searchTerm);
-    if (this.state.searchTerm === '') {
-      const pokemonDataArray = await this.getListOfPokemons(pokemonData);
+    resetPokemons();
+    props.startLoader();
+    localStorage.setItem('searchTerm', searchTerm);
+    const pokemonData = await getPokemonData(searchTerm);
+    setRealLength(1);
+    if (searchTerm === '') {
+      const pokemonDataArray = await getListOfPokemons(pokemonData);
       pokemonDataArray.forEach((pokemonData: PokemonData | undefined) => {
         if (pokemonData) {
-          this.savePokemons(pokemonData);
+          savePokemons(pokemonData);
         }
       });
-      this.setState((prevState) => {
-        prevState.pokemons.length = 20;
-        return prevState;
-      });
     } else {
-      this.savePokemons(pokemonData);
+      savePokemons(pokemonData);
     }
-  };
+  }
 
-  getPokemonData = async (searchTerm: string): Promise<PokemonData> => {
+  async function getPokemonData(searchTerm: string): Promise<PokemonData> {
     try {
       const response = await fetch(
         `https://pokeapi.co/api/v2/pokemon/${searchTerm.toLowerCase().trim()}`
@@ -106,9 +96,9 @@ class Search extends Component<SearchProps, SearchState> {
       console.error('Error fetching data:', error);
       throw error;
     }
-  };
+  }
 
-  createPokemonObject = (pokemonData: PokemonData): Pokemon => {
+  function createPokemonObject(pokemonData: PokemonData): Pokemon {
     const pokemonName: string = pokemonData.name ?? '';
     const pokemonAbilities: string[] =
       (pokemonData.abilities as PokemonAbility[])?.map(
@@ -121,53 +111,34 @@ class Search extends Component<SearchProps, SearchState> {
       description: `Abilities: ${pokemonAbilities.join(', ')}`,
     };
     return pokemon;
-  };
-
-  savePokemons = (pokemonData: PokemonData) => {
-    const pokemon = this.createPokemonObject(pokemonData);
-    this.setState(
-      (prevState) => ({
-        pokemons: [...prevState.pokemons, pokemon],
-      }),
-      () => {
-        this.props.getPokemons(this.state.pokemons);
-      }
-    );
-  };
-
-  resetPokemons = () => {
-    this.setState({
-      pokemons: [],
-    });
-  };
-
-  setSearchTerm = (e: ChangeEvent<HTMLInputElement>) => {
-    const searchTerm = e.target.value;
-    this.setState({
-      searchTerm,
-    });
-    localStorage.setItem('searchTerm', searchTerm);
-  };
-
-  render() {
-    return (
-      <>
-        <form className={styles['search-form']} onSubmit={this.handleSubmit}>
-          <input
-            className={styles['search-form__input']}
-            type="text"
-            name="search-form__input"
-            onChange={this.setSearchTerm}
-            value={this.state.searchTerm}
-            placeholder="e.g. Charmander"
-          />
-          <button className={styles['search-form__button']}>
-            <img src="/icons/search-icon.svg" alt="Search" />
-          </button>
-        </form>
-      </>
-    );
   }
-}
+
+  function savePokemons(pokemonData: PokemonData) {
+    const pokemon = createPokemonObject(pokemonData);
+    setPokemons((prevPokemons) => [...prevPokemons, pokemon]);
+  }
+
+  function resetPokemons() {
+    setPokemons([]);
+  }
+
+  return (
+    <div>
+      <form className={styles['search-form']} onSubmit={handleSubmit}>
+        <input
+          className={styles['search-form__input']}
+          type="text"
+          name="search-form__input"
+          onChange={(e) => setSearchTerm(e.target.value)}
+          value={searchTerm}
+          placeholder="e.g. Charmander"
+        />
+        <button className={styles['search-form__button']}>
+          <img src="/icons/search-icon.svg" alt="Search" />
+        </button>
+      </form>
+    </div>
+  );
+};
 
 export default Search;

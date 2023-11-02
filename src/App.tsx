@@ -1,49 +1,46 @@
-import { Component } from 'react';
+import { useEffect, useState } from 'react';
 import Search from './components/Search';
 import { Pokemon } from './interfaces/pokemon';
 import './styles/globals.scss';
 import PokemonCard from './components/PokemonCard';
 import Loader from './components/Loader';
 
-class App extends Component {
-  state = {
-    pokemons: [] as Pokemon[],
-    loading: true,
-  };
+function App() {
+  const [pokemons, setPokemons] = useState<Pokemon[]>([]);
+  const [realLength, setRealLength] = useState(0);
+  const [loading, setLoading] = useState(true);
 
-  getPokemons = (pokemons: Pokemon[]) => {
-    this.setState(() => ({
-      pokemons,
-      loading: false,
-    }));
-  };
+  useEffect(() => {
+    if (pokemons.length > realLength) {
+      const pokemonsTemp = Array.from(pokemons);
+      pokemonsTemp.length = realLength;
+      setPokemons(pokemonsTemp);
+    }
+  }, [pokemons]);
 
-  startLoader = () => {
-    this.setState((prevState) => ({
-      ...prevState,
-      loading: true,
-    }));
-  };
-
-  renderPokemonCards = (pokemons: Pokemon[]) => {
-    return pokemons.map((pokemon) => (
-      <PokemonCard key={pokemon.name} {...pokemon} />
-    ));
-  };
-
-  render() {
-    return (
-      <div className="container">
-        <img className="logo" src="/icons/logo.svg" />
-        <Search startLoader={this.startLoader} getPokemons={this.getPokemons} />
-        {this.state.loading ? (
-          <Loader />
-        ) : (
-          this.renderPokemonCards(this.state.pokemons)
-        )}
-      </div>
-    );
+  function getPokemons(pokemons: Pokemon[], realLength: number) {
+    setPokemons(pokemons);
+    setLoading(false);
+    setRealLength(realLength);
   }
+
+  function startLoader() {
+    setLoading(true);
+  }
+
+  function renderPokemonCards(pokemons: Pokemon[]) {
+    return pokemons.map((pokemon) => {
+      return <PokemonCard key={pokemon.name} {...pokemon} />;
+    });
+  }
+
+  return (
+    <div className="container">
+      <img className="logo" src="/icons/logo.svg" />
+      <Search startLoader={startLoader} getPokemons={getPokemons} />
+      {loading ? <Loader /> : renderPokemonCards(pokemons)}
+    </div>
+  );
 }
 
 export default App;
