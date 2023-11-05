@@ -16,6 +16,10 @@ export interface PokemonData {
     front_default: string;
   };
   results: PokemonResult[];
+  weight: number;
+  height: number;
+  base_experience: string;
+  is_default: boolean;
 }
 
 export interface PokemonAbility {

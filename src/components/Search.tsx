@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useState } from 'react';
-import styles from '../styles/Search.module.scss';
+import styles from '../styles/components/Search.module.scss';
 import { Pokemon, PokemonAbility, PokemonData } from '../interfaces/pokemon';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
 interface SearchProps {
   getPokemons: (pokemons: Pokemon[], realLength: number) => void;
@@ -8,6 +9,9 @@ interface SearchProps {
 }
 
 const Search = (props: SearchProps) => {
+  const MAX_PAGE = 65;
+  const MIN_PAGE = 1;
+
   const [searchTerm, setSearchTerm] = useState(
     localStorage.getItem('searchTerm') ?? ''
   );
@@ -16,13 +20,35 @@ const Search = (props: SearchProps) => {
     localStorage.getItem('searchTerm') ? 1 : 0
   );
 
+  const [searchParams] = useSearchParams();
+  let pageNumber: number = Number(searchParams.get('page'));
+  const searchWord = searchParams.get('search');
+
+  const navigate = useNavigate();
+  const offset = pageNumber * 2 * 10 - 20;
+
+  const location = useLocation();
+
   useEffect(() => {
     async function fetchData() {
-      if (searchTerm) {
-        const pokemonData = await getPokemonData(searchTerm ?? '');
+      props.startLoader();
+      resetPokemons();
+      if ((searchTerm || searchWord) && !pageNumber) {
+        searchWord
+          ? navigate(`/?search=${searchWord}`)
+          : navigate(`/?search=${searchTerm}`);
+
+        const pokemonData = await getPokemonData(
+          searchWord ? searchWord : searchTerm
+        );
         savePokemons(pokemonData);
       } else {
-        const pokemonData = await getPokemonData(searchTerm ?? '');
+        if (pageNumber > MAX_PAGE) pageNumber = MAX_PAGE;
+        else if (pageNumber < MIN_PAGE) pageNumber = MIN_PAGE;
+
+        pageNumber ? navigate(`/?page=${pageNumber}`) : openFirstPage();
+
+        const pokemonData = await getPokemonData('');
 
         const pokemonDataArray = await getListOfPokemons(pokemonData);
         pokemonDataArray.forEach((pokemonData) => {
@@ -33,8 +59,10 @@ const Search = (props: SearchProps) => {
       }
     }
 
-    fetchData();
-  }, []);
+    if (location.pathname === '/') {
+      fetchData();
+    }
+  }, [pageNumber]);
 
   useEffect(() => {
     props.startLoader();
@@ -53,7 +81,10 @@ const Search = (props: SearchProps) => {
             return data;
           }
         } catch (error) {
-          console.error('Error fetching data for a Pokémon:', error);
+          console.error(
+            'Error fetching data const navigate = useNavigate();for a Pokémon:',
+            error
+          );
         }
       }
     );
@@ -69,6 +100,8 @@ const Search = (props: SearchProps) => {
     const pokemonData = await getPokemonData(searchTerm);
     setRealLength(1);
     if (searchTerm === '') {
+      openFirstPage();
+
       const pokemonDataArray = await getListOfPokemons(pokemonData);
       pokemonDataArray.forEach((pokemonData: PokemonData | undefined) => {
         if (pokemonData) {
@@ -76,6 +109,7 @@ const Search = (props: SearchProps) => {
         }
       });
     } else {
+      navigate(`/?search=${searchTerm}`);
       savePokemons(pokemonData);
     }
   }
@@ -83,7 +117,9 @@ const Search = (props: SearchProps) => {
   async function getPokemonData(searchTerm: string): Promise<PokemonData> {
     try {
       const response = await fetch(
-        `https://pokeapi.co/api/v2/pokemon/${searchTerm.toLowerCase().trim()}`
+        `https://pokeapi.co/api/v2/pokemon/${searchTerm.toLowerCase().trim()}${
+          !searchTerm && pageNumber ? `?offset=${offset}&limit=20` : ''
+        }`
       );
 
       if (!response.ok) {
@@ -120,6 +156,10 @@ const Search = (props: SearchProps) => {
 
   function resetPokemons() {
     setPokemons([]);
+  }
+
+  function openFirstPage() {
+    navigate('/?page=1');
   }
 
   return (
