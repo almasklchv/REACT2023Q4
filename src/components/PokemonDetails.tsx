@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styles from '../styles/components/PokemonDetails.module.scss';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { PokemonData } from '../interfaces/pokemon';
+import Loader from './Loader';
 
 const PokemonDetails = () => {
   const location = useLocation();
@@ -48,13 +49,7 @@ const PokemonDetails = () => {
           onClick={closeDetailsModal}
         />
       </button>
-      {loading && (
-        <img
-          className={styles.loader}
-          src="/icons/loading-loader.gif"
-          alt="loading"
-        />
-      )}
+      {loading && <Loader />}
       {!loading && (
         <>
           <p className={styles['pokemon-name']}>{pokemonName}</p>
