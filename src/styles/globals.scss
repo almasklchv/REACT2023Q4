@@ -1,0 +1,28 @@
+.container {
+  display: flex;
+  justify-content: space-between;
+  width: 97vw;
+}
+
+.left {
+  width: 97vw;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.left.to-left {
+  width: 40vw;
+}
+
+.logo {
+  max-width: 484px;
+  max-height: 231px;
+  margin-top: 30px;
+}
+
+.pokemonDetails {
+  position: fixed;
+  right: 5%;
+  top: 25vh;
+}
