@@ -1,14 +1,10 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useContext, useEffect, useState } from 'react';
 import styles from '../styles/components/Search.module.scss';
 import { Pokemon, PokemonAbility, PokemonData } from '../interfaces/pokemon';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { MyContext } from '../MyContext';
 
-interface SearchProps {
-  getPokemons: (pokemons: Pokemon[], realLength: number) => void;
-  startLoader: () => void;
-}
-
-const Search = (props: SearchProps) => {
+const Search = () => {
   const MAX_PAGE = 65;
   const MIN_PAGE = 1;
 
@@ -29,9 +25,11 @@ const Search = (props: SearchProps) => {
 
   const location = useLocation();
 
+  const { startLoader, getPokemons } = useContext(MyContext);
+
   useEffect(() => {
     async function fetchData() {
-      props.startLoader();
+      startLoader();
       resetPokemons();
       if ((searchTerm || searchWord) && !pageNumber) {
         searchWord
@@ -65,8 +63,8 @@ const Search = (props: SearchProps) => {
   }, [pageNumber]);
 
   useEffect(() => {
-    props.startLoader();
-    props.getPokemons(pokemons, realLength);
+    startLoader();
+    getPokemons(pokemons, realLength);
   }, [pokemons]);
 
   async function getListOfPokemons(pokemonData: PokemonData) {
@@ -95,7 +93,7 @@ const Search = (props: SearchProps) => {
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     resetPokemons();
-    props.startLoader();
+    startLoader();
     localStorage.setItem('searchTerm', searchTerm);
     const pokemonData = await getPokemonData(searchTerm);
     setRealLength(1);

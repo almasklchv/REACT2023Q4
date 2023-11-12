@@ -1,15 +1,14 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styles from '../styles/components/Pagination.module.scss';
-import { PaginationProps } from '../interfaces/pagination';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { MyContext } from '../MyContext';
 
-const Pagination = (props: PaginationProps) => {
+const Pagination = () => {
   const MAX_PAGE = 65;
   const MIN_PAGE = 1;
-
-  const [searchParams] = useSearchParams();
-  const pageNumber = Number(searchParams.get('page'));
   const navigate = useNavigate();
+
+  const { pageNumber } = useContext(MyContext);
 
   function prevPage() {
     navigate(`/?page=${pageNumber === MIN_PAGE ? MAX_PAGE : pageNumber - 1}`);
@@ -24,7 +23,7 @@ const Pagination = (props: PaginationProps) => {
       <button className={styles.btn} onClick={prevPage}>
         <img src="/icons/arrow-left.svg" alt="arrow to left" />
       </button>
-      <p className={styles['page-number']}>{props.pageNumber}</p>
+      <p className={styles['page-number']}>{pageNumber}</p>
       <button className={styles.btn} onClick={nextPage}>
         <img src="/icons/arrow-right.svg" alt="arrow to right" />
       </button>

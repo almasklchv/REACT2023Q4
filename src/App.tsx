@@ -6,6 +6,7 @@ import PokemonCard from './components/PokemonCard';
 import Loader from './components/Loader';
 import { Outlet, useLocation, useSearchParams } from 'react-router-dom';
 import Pagination from './components/Pagination';
+import { MyContext } from './MyContext';
 
 function App() {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
@@ -64,16 +65,18 @@ function App() {
 
   return (
     <div className="container">
-      <div className={`left ${isModalOpen && 'to-left'}`}>
-        <img className="logo" src="/icons/logo.svg" />
-        <Search startLoader={startLoader} getPokemons={getPokemons} />
-        {loading && <Loader />}
-        {renderPokemonCards(pokemons)}
-        {!searchTerm && <Pagination pageNumber={pageNumber} />}
-      </div>
-      <div className="pokemonDetails">
-        <Outlet />
-      </div>
+      <MyContext.Provider value={{ getPokemons, startLoader, pageNumber }}>
+        <div className={`left ${isModalOpen && 'to-left'}`}>
+          <img className="logo" src="/icons/logo.svg" />
+          <Search />
+          {loading && <Loader />}
+          {renderPokemonCards(pokemons)}
+          {!searchTerm && <Pagination />}
+        </div>
+        <div className="pokemonDetails">
+          <Outlet />
+        </div>
+      </MyContext.Provider>
     </div>
   );
 }
