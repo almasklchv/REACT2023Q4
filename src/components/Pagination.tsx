@@ -24,7 +24,11 @@ const Pagination = () => {
         <img src="/icons/arrow-left.svg" alt="arrow to left" />
       </button>
       <p className={styles['page-number']}>{pageNumber}</p>
-      <button className={styles.btn} onClick={nextPage}>
+      <button
+        data-testid="arrow to right"
+        className={styles.btn}
+        onClick={nextPage}
+      >
         <img src="/icons/arrow-right.svg" alt="arrow to right" />
       </button>
     </div>

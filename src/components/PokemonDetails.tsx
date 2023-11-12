@@ -40,13 +40,16 @@ const PokemonDetails = () => {
   }
 
   return (
-    <div className={styles.container}>
-      <button className={styles['close-btn']}>
+    <div data-testid="details" className={styles.container}>
+      <button
+        data-testid="close-btn"
+        className={styles['close-btn']}
+        onClick={closeDetailsModal}
+      >
         <img
           className={styles['close-img']}
           src="/icons/close.svg"
           alt="Close button"
-          onClick={closeDetailsModal}
         />
       </button>
       {loading && <Loader />}

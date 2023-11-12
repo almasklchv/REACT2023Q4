@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import Search from './components/Search';
 import { Pokemon } from './interfaces/pokemon';
 import './styles/globals.scss';
-import PokemonCard from './components/PokemonCard';
 import Loader from './components/Loader';
 import { Outlet, useLocation, useSearchParams } from 'react-router-dom';
 import Pagination from './components/Pagination';
 import { MyContext } from './MyContext';
+import PokemonList from './components/PokemonList';
 
 function App() {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
@@ -57,20 +57,16 @@ function App() {
     setLoading(true);
   }
 
-  function renderPokemonCards(pokemons: Pokemon[]) {
-    return pokemons.map((pokemon) => {
-      return <PokemonCard key={pokemon.name} {...pokemon} />;
-    });
-  }
-
   return (
     <div className="container">
-      <MyContext.Provider value={{ getPokemons, startLoader, pageNumber }}>
+      <MyContext.Provider
+        value={{ getPokemons, startLoader, pageNumber, pokemons }}
+      >
         <div className={`left ${isModalOpen && 'to-left'}`}>
           <img className="logo" src="/icons/logo.svg" />
           <Search />
           {loading && <Loader />}
-          {renderPokemonCards(pokemons)}
+          <PokemonList />
           {!searchTerm && <Pagination />}
         </div>
         <div className="pokemonDetails">

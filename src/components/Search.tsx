@@ -113,23 +113,14 @@ const Search = () => {
   }
 
   async function getPokemonData(searchTerm: string): Promise<PokemonData> {
-    try {
-      const response = await fetch(
-        `https://pokeapi.co/api/v2/pokemon/${searchTerm.toLowerCase().trim()}${
-          !searchTerm && pageNumber ? `?offset=${offset}&limit=20` : ''
-        }`
-      );
+    const response = await fetch(
+      `https://pokeapi.co/api/v2/pokemon/${searchTerm.toLowerCase().trim()}${
+        !searchTerm && pageNumber ? `?offset=${offset}&limit=20` : ''
+      }`
+    );
 
-      if (!response.ok) {
-        throw new Error(`Failed to fetch data from the API`);
-      }
-
-      const data: PokemonData = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      throw error;
-    }
+    const data: PokemonData = await response.json();
+    return data;
   }
 
   function createPokemonObject(pokemonData: PokemonData): Pokemon {

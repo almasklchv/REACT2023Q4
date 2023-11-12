@@ -15,6 +15,7 @@ const router = createBrowserRouter([
         element: <PokemonDetails />,
       },
     ],
+    errorElement: <div data-testid="not-found-page">NOT FOUND 404</div>,
   },
 ]);
 
