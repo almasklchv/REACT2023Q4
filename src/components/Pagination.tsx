@@ -1,14 +1,15 @@
-import React, { useContext } from 'react';
 import styles from '../styles/components/Pagination.module.scss';
 import { useNavigate } from 'react-router-dom';
-import { MyContext } from '../MyContext';
+import { useSelector } from 'react-redux';
+import { PaginationSlice } from '../store/paginationSlice';
 
 const Pagination = () => {
   const MAX_PAGE = 65;
   const MIN_PAGE = 1;
   const navigate = useNavigate();
-
-  const { pageNumber } = useContext(MyContext);
+  const pageNumber = useSelector(
+    (state: PaginationSlice) => state.pagination.pageNumber
+  );
 
   function prevPage() {
     navigate(`/?page=${pageNumber === MIN_PAGE ? MAX_PAGE : pageNumber - 1}`);

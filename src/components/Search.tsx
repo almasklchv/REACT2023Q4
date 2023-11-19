@@ -1,8 +1,16 @@
-import { FormEvent, useContext, useEffect, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import styles from '../styles/components/Search.module.scss';
 import { Pokemon, PokemonAbility, PokemonData } from '../interfaces/pokemon';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
-import { MyContext } from '../MyContext';
+import { useDispatch } from 'react-redux';
+import {
+  addPokemon,
+  start,
+  finish,
+  resetPokemons,
+  setRealLength,
+} from '../store/pokemonsSlice';
+import { setPageNumber } from '../store/paginationSlice';
 
 const Search = () => {
   const MAX_PAGE = 65;
@@ -10,10 +18,6 @@ const Search = () => {
 
   const [searchTerm, setSearchTerm] = useState(
     localStorage.getItem('searchTerm') ?? ''
-  );
-  const [pokemons, setPokemons] = useState([] as Pokemon[]);
-  const [realLength, setRealLength] = useState(
-    localStorage.getItem('searchTerm') ? 1 : 0
   );
 
   const [searchParams] = useSearchParams();
@@ -24,13 +28,14 @@ const Search = () => {
   const offset = pageNumber * 2 * 10 - 20;
 
   const location = useLocation();
+  const dispatch = useDispatch();
 
-  const { startLoader, getPokemons } = useContext(MyContext);
+  dispatch(setPageNumber({ pageNumber: Number(searchParams.get('page')) }));
 
   useEffect(() => {
     async function fetchData() {
-      startLoader();
-      resetPokemons();
+      dispatch(start());
+      dispatch(resetPokemons());
       if ((searchTerm || searchWord) && !pageNumber) {
         searchWord
           ? navigate(`/?search=${searchWord}`)
@@ -62,14 +67,9 @@ const Search = () => {
     }
   }, [pageNumber]);
 
-  useEffect(() => {
-    startLoader();
-    getPokemons(pokemons, realLength);
-  }, [pokemons]);
-
   async function getListOfPokemons(pokemonData: PokemonData) {
     const results = pokemonData.results;
-    setRealLength(results.length);
+    dispatch(setRealLength({ realLength: results.length }));
     const pokemonPromises = results.map(
       async (pokemon: { name: string; url: string }) => {
         try {
@@ -92,11 +92,11 @@ const Search = () => {
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    resetPokemons();
-    startLoader();
+    dispatch(resetPokemons());
+    dispatch(start());
     localStorage.setItem('searchTerm', searchTerm);
     const pokemonData = await getPokemonData(searchTerm);
-    setRealLength(1);
+    dispatch(setRealLength({ realLength: 1 }));
     if (searchTerm === '') {
       openFirstPage();
 
@@ -140,11 +140,8 @@ const Search = () => {
 
   function savePokemons(pokemonData: PokemonData) {
     const pokemon = createPokemonObject(pokemonData);
-    setPokemons((prevPokemons) => [...prevPokemons, pokemon]);
-  }
-
-  function resetPokemons() {
-    setPokemons([]);
+    dispatch(addPokemon({ pokemon }));
+    dispatch(finish());
   }
 
   function openFirstPage() {

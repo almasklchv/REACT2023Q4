@@ -1,10 +1,13 @@
-import { useContext } from 'react';
-import { MyContext } from '../MyContext';
 import { Pokemon } from '../interfaces/pokemon';
+import { PokemonsSlice } from '../store/pokemonsSlice';
 import PokemonCard from './PokemonCard';
+import { useSelector } from 'react-redux';
 
 const PokemonList = () => {
-  const { pokemons } = useContext(MyContext);
+  const pokemons = useSelector(
+    (state: PokemonsSlice) => state.pokemons.pokemons
+  );
+  const loading = useSelector((state: PokemonsSlice) => state.pokemons.loading);
 
   function renderPokemonCards(pokemons: Pokemon[]) {
     return pokemons.map((pokemon) => {
@@ -12,7 +15,7 @@ const PokemonList = () => {
     });
   }
 
-  if (!pokemons.length) return <div>Pokemons not found</div>;
+  if (!pokemons.length && !loading) return <div>Pokemons not found</div>;
 
   return <div data-testid="pokemon-list">{renderPokemonCards(pokemons)}</div>;
 };

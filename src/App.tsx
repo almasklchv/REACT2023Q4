@@ -5,13 +5,18 @@ import './styles/globals.scss';
 import Loader from './components/Loader';
 import { Outlet, useLocation, useSearchParams } from 'react-router-dom';
 import Pagination from './components/Pagination';
-import { MyContext } from './MyContext';
 import PokemonList from './components/PokemonList';
+import { useDispatch, useSelector } from 'react-redux';
+import { PokemonsSlice, addPokemon, start } from './store/pokemonsSlice';
 
 function App() {
-  const [pokemons, setPokemons] = useState<Pokemon[]>([]);
-  const [realLength, setRealLength] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const pokemons = useSelector(
+    (state: PokemonsSlice) => state.pokemons.pokemons
+  );
+  const realLength = useSelector(
+    (state: PokemonsSlice) => state.pokemons.realLength
+  );
+  const loading = useSelector((state: PokemonsSlice) => state.pokemons.loading);
   const [searchParams] = useSearchParams();
   const [pageNumber, setPageNumber] = useState<number>(
     Number(searchParams.get('page'))
@@ -19,6 +24,7 @@ function App() {
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search'));
 
   const location = useLocation();
+  const dispatch = useDispatch();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -31,14 +37,15 @@ function App() {
   }, [location]);
 
   useEffect(() => {
-    if (pageNumber !== 0) startLoader();
+    if (pageNumber !== 0) dispatch(start());
   }, [pageNumber]);
 
   useEffect(() => {
     if (pokemons.length > realLength) {
       const pokemonsTemp = Array.from(pokemons);
       pokemonsTemp.length = realLength;
-      setPokemons(pokemonsTemp);
+      const pokemon: Pokemon = pokemonsTemp[realLength - 1];
+      addPokemon({ pokemon: pokemon });
     }
   }, [pokemons]);
 
@@ -47,32 +54,18 @@ function App() {
     setSearchTerm(searchParams.get('search'));
   }, [searchParams]);
 
-  function getPokemons(pokemons: Pokemon[], realLength: number) {
-    setPokemons(pokemons);
-    setLoading(false);
-    setRealLength(realLength);
-  }
-
-  function startLoader() {
-    setLoading(true);
-  }
-
   return (
     <div className="container">
-      <MyContext.Provider
-        value={{ getPokemons, startLoader, pageNumber, pokemons }}
-      >
-        <div className={`left ${isModalOpen && 'to-left'}`}>
-          <img className="logo" src="/icons/logo.svg" />
-          <Search />
-          {loading && <Loader />}
-          <PokemonList />
-          {!searchTerm && <Pagination />}
-        </div>
-        <div className="pokemonDetails">
-          <Outlet />
-        </div>
-      </MyContext.Provider>
+      <div className={`left ${isModalOpen && 'to-left'}`}>
+        <img className="logo" src="/icons/logo.svg" />
+        <Search />
+        {loading && <Loader />}
+        <PokemonList />
+        {!searchTerm && <Pagination />}
+      </div>
+      <div className="pokemonDetails">
+        <Outlet />
+      </div>
     </div>
   );
 }
