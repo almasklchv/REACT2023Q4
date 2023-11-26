@@ -1,0 +1,1 @@
+self.__NEXT_FONT_MANIFEST="{\"pages\":{},\"app\":{\"/home/secret/Desktop/it-projects/REACT2023Q4/src/app/layout\":[\"static/media/513657b02c5c193f-s.p.woff2\",\"static/media/c9a5bc6a7c948fb0-s.p.woff2\"]},\"appUsingSizeAdjust\":true,\"pagesUsingSizeAdjust\":false}"

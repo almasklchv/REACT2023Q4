@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { MyContext } from '../MyContext';
-import PokemonList from '../components/PokemonList';
+import PokemonList from '../app/components/PokemonList';
 import { MemoryRouter } from 'react-router-dom';
 import { mockPokemons } from '../mockData/pokemons';
 

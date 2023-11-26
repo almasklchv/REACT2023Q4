@@ -1,9 +1,9 @@
 import { MemoryRouter } from 'react-router-dom';
-import PokemonCard from '../components/PokemonCard';
+import PokemonCard from '../app/components/PokemonCard';
 import { mockPokemons } from '../mockData/pokemons';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import PokemonDetails from '../components/PokemonDetails';
+import PokemonDetails from '../app/components/PokemonDetails';
 import { act } from 'react-dom/test-utils';
 
 import fetchMock from 'jest-fetch-mock';
