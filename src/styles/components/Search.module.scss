@@ -1,0 +1,31 @@
+$inputColor: #f8efc1;
+
+.search-form {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 100px;
+  margin-bottom: 100px;
+}
+
+.search-form__input {
+  width: 25vw;
+  height: 48px;
+  border-radius: 30px;
+  background: $inputColor;
+  border: 0;
+
+  padding-left: 28px;
+
+  color: rgba(0, 0, 0, 0.64);
+  font-size: 20px;
+  font-weight: 500;
+  margin-right: 40px;
+}
+
+.search-form__button {
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  
+}

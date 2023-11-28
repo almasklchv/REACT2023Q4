@@ -1,0 +1,43 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 97vw;
+}
+
+.left {
+  width: 97vw;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.left.to-left {
+  width: 40vw;
+}
+
+.logo {
+  max-width: 484px;
+  max-height: 231px;
+  margin-top: 30px;
+}
+
+.pokemonDetails {
+  position: fixed;
+  right: 5%;
+  top: 25vh;
+}
+
+.btn {
+  cursor: pointer;
+  background-color: #6df414;
+  color: rgba(0, 0, 0, 0.64);
+  border: none;
+  border-radius: 17px;
+
+  font-size: 15px;
+
+  padding: 10px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
