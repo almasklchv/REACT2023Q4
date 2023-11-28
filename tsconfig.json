@@ -25,7 +25,8 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "types": ["testing-library__jest-dom"],
   },
   "include": [
     "app",

@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "tsc && next build",
     "start": "next start",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "next lint",
     "format:fix": "prettier --write .",
     "preview": "vite preview",
     "prepare": "husky install",
@@ -16,7 +16,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+      "pre-commit": "next lint",
       "pre-push": "jest --coverage"
     }
   },
@@ -35,6 +35,7 @@
     "redux-devtools-extension": "^2.13.9"
   },
   "devDependencies": {
+    "@next/eslint-plugin-next": "^14.0.3",
     "@testing-library/dom": "^9.3.3",
     "@testing-library/jest-dom": "^6.1.4",
     "@testing-library/react": "^14.1.2",
