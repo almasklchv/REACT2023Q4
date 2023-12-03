@@ -10,8 +10,10 @@ const UserCard = (props: User) => {
         <td>{props.email}</td>
         <td>{props.password}</td>
         <td>{props.gender}</td>
-        <td>{props.terms}</td>
-        <td>{props.pictureInBase64}</td>
+        <td>{String(props.terms)}</td>
+        <td>
+          <img width={50} src={props.pictureInBase64} alt="profile pictre" />
+        </td>
         <td>{props.country}</td>
       </tr>
     </>

@@ -7,7 +7,7 @@ interface UserState {
 
 export const userSlice = createSlice({
   name: 'users',
-  initialState: [] as User[],
+  initialState: JSON.parse(localStorage.getItem('users') ?? '[]') as User[],
   reducers: {
     addUser: (state: User[], action) => {
       state.push(action.payload);
