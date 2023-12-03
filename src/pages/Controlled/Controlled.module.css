@@ -1,0 +1,21 @@
+.container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.error {
+  color: #c0392b;
+  font-size: 14px;
+  margin-top: -10px;
+  margin-bottom: 16px;
+}
+
+.option {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+}
