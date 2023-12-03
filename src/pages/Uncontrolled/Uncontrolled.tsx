@@ -28,7 +28,7 @@ const Uncontrolled = () => {
     name: string()
       .matches(/^[A-Z]/, 'First letter must be uppercase')
       .required('Name is required'),
-    age: number().required('Age is required'),
+    age: number().min(1).required('Age is required'),
     email: string().email('Invalid email').required('Email is required'),
     password: string()
       .matches(passwordRegex, 'Your password is weak!')

@@ -13,7 +13,7 @@ const schema = yup.object().shape({
     .string()
     .matches(/^[A-Z]/, 'First letter must be uppercase')
     .required('Name is required'),
-  age: yup.number().required('Age is required'),
+  age: yup.number().min(1).required('Age is required'),
   email: yup.string().email('Invalid email').required('Email is required'),
   password: yup
     .string()
