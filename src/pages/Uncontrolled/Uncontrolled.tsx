@@ -4,7 +4,7 @@ import styles from './Uncontrolled.module.css';
 import { useDispatch } from 'react-redux';
 import { addUser } from '../../redux';
 import { useNavigate } from 'react-router-dom';
-import { FormErrors } from '../../entities/FormErrors.interface';
+import { FormErrors } from '../../entities';
 
 const Uncontrolled = () => {
   const [pictureInBase64, setPictureInBase64] = useState<string | null>(null);
